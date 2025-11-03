@@ -1,8 +1,8 @@
 /**
  * MCP Client for connecting to Model Context Protocol servers.
  *
- * This client uses the Streamable-HTTP transport (recommended over SSE)
- * to communicate with MCP servers via the /mcp endpoint.
+ * This client uses the Streamable-HTTP transport
+ * to communicate with MCP servers via the /mcp endpoint since SSE is deprecated
  */
 
 import { Client } from '@modelcontextprotocol/sdk/client/index.js';
@@ -157,7 +157,7 @@ export class MCPClient {
     }
 
     /**
-     * Calls a tool on the MCP server.
+     * Calls a tool on the MCP server and get text result
      *
      * @param toolName - Name of the tool to call
      * @param args - Arguments to pass to the tool
@@ -180,7 +180,9 @@ export class MCPClient {
                 arguments: args ?? {},
             });
 
-            // Extract text content from response
+            // Extract text content from response. 
+            // No image data (often as base64 string) will be returned from this method 
+            // so as to avoid corrupting Neuro's context
             const messages: string[] = [];
             if (response.content && Array.isArray(response.content)) {
                 for (const item of response.content) {

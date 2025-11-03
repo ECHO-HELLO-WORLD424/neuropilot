@@ -1,17 +1,18 @@
 /**
  * Translation utilities for converting MCP tools to Neuro actions.
  *
- * This module handles:
- * - Name sanitization (MCP tool names → Neuro action names)
- * - Schema simplification (removing unsupported JSON Schema keywords)
- * - Data parsing (Neuro action data → MCP tool arguments)
+ * This code does the following:
+ * - MCP tool names -> Neuro action names
+ * - Remove unsupported JSON Schema keywords
+ * - Data parsing (Neuro action data -> MCP tool arguments)
  */
 
 import type { JSONSchema7 } from 'json-schema';
 
 /**
  * JSON Schema keywords that are forbidden in Neuro action schemas.
- * These must be removed to ensure compatibility with the Neuro API.
+ * See https://github.com/VedalAI/neuro-game-sdk/blob/main/API/SPECIFICATION.md#action
+ * These should be removed to ensure compatibility with Neuro.
  */
 export const FORBIDDEN_SCHEMA_KEYS = new Set([
     // Schema metadata
@@ -24,39 +25,25 @@ export const FORBIDDEN_SCHEMA_KEYS = new Set([
     '$ref',
     '$schema',
     '$vocabulary',
-
-    // Additional properties and composition
     'additionalProperties',
     'allOf',
     'anyOf',
     'oneOf',
     'not',
-
-    // Content validation
     'contentEncoding',
     'contentMediaType',
     'contentSchema',
-
-    // Conditional schemas
     'if',
     'then',
     'else',
-
-    // Dependencies
     'dependentRequired',
     'dependentSchemas',
-
-    // Property constraints
     'maxProperties',
     'minProperties',
     'patternProperties',
     'unevaluatedItems',
     'unevaluatedProperties',
-
-    // Numeric constraints
     'multipleOf',
-
-    // Documentation and metadata (Neuro API handles these separately)
     'title',
     'description',
     'deprecated',
@@ -67,7 +54,7 @@ export const FORBIDDEN_SCHEMA_KEYS = new Set([
 /**
  * Sanitizes an MCP tool name to be compatible with Neuro action naming rules.
  *
- * Neuro action names must:
+ * Neuro action names should:
  * - Only contain lowercase letters, numbers, underscores, and hyphens
  * - Not have consecutive underscores
  * - Not start or end with underscores
@@ -100,11 +87,8 @@ export function sanitizeActionName(name: string): string {
 
 /**
  * Recursively simplifies a JSON Schema by removing forbidden keywords.
+ * However it's highly recommended to avoid using forbidden keywords if possible to avoid unexpected output
  *
- * This function:
- * 1. Removes all keywords in FORBIDDEN_SCHEMA_KEYS
- * 2. Handles composition keywords (anyOf/oneOf/allOf) by merging the first option
- * 3. Recursively processes nested objects and arrays
  *
  * @param schema - The JSON Schema to simplify (or null/undefined)
  * @returns A simplified schema compatible with Neuro, or a default object schema if input is null/undefined

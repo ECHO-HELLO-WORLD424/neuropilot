@@ -2,9 +2,9 @@
  * Tool Registry for maintaining bidirectional mappings between
  * Neuro action names and MCP tool names.
  *
- * This is necessary because:
- * 1. MCP tool names may not be valid Neuro action names (e.g., "GetFileContent")
- * 2. We sanitize tool names (e.g., "get_file_content")
+ * This code does the following:
+ * 1. We sanitize tool names because MCP tool names may not be valid Neuro action names 
+ * (e.g., "GetFileContent" -> "get_file_content")
  * 3. When Neuro calls an action, we need to find the original MCP tool name
  */
 
